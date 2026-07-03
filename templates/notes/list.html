@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Notes — Mining Study Hub{% endblock %}
+{% block content %}
+<div class="section shell">
+  <div class="section-head">
+    <h2>Notes</h2>
+    {% if current_user.is_authenticated %}<a href="{{ url_for('notes.new') }}" class="btn btn-primary">Write a note</a>{% endif %}
+  </div>
+
+  <form method="GET" class="filter-bar">
+    <select name="subject" onchange="this.form.submit()">
+      <option value="">All subjects</option>
+      {% for s in subjects %}
+        <option value="{{ s.id }}" {% if selected_subject == s.id %}selected{% endif %}>{{ s.name }}</option>
+      {% endfor %}
+    </select>
+  </form>
+
+  <div class="card-grid">
+    {% for note in notes %}
+      <a href="{{ url_for('notes.view', note_id=note.id) }}" class="card">
+        <span class="tag mono">{{ note.subject_ref.name if note.subject_ref else 'General' }}</span>
+        <h3 style="margin-top:10px;">{{ note.title }}</h3>
+        <p class="item-meta">{{ note.content[:100] }}{% if note.content|length > 100 %}...{% endif %}</p>
+      </a>
+    {% else %}
+      <div class="empty-state">No notes yet. <a href="{{ url_for('notes.new') if current_user.is_authenticated else url_for('auth.login') }}">Write the first one</a>.</div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

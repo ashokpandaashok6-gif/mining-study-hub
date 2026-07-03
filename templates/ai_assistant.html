@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}AI Assistant — Mining Study Hub{% endblock %}
+{% block content %}
+<div class="narrow section">
+  <span class="eyebrow">Ask anything mining</span>
+  <h2>AI Study Assistant</h2>
+  <p class="item-meta" style="margin-bottom:20px;">Explain a topic, generate an N-mark answer, build MCQs, or write viva questions.</p>
+
+  <div class="quick-prompts">
+    {% for p in quick_prompts %}
+      <button type="button" data-prompt="{{ p }}">{{ p }}</button>
+    {% endfor %}
+  </div>
+
+  <div id="chat-window" class="chat-window"></div>
+
+  <form id="ai-form" class="search-box">
+    <input type="text" id="ai-input" placeholder="Ask about any mining topic..." required>
+    <button type="submit" id="ai-send" class="btn btn-primary">Ask</button>
+  </form>
+</div>
+{% endblock %}

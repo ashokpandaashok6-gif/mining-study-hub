@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — Mining Study Hub{% endblock %}
+{% block content %}
+<div class="section shell">
+  <div class="section-head">
+    <div>
+      <span class="eyebrow">Signed in as {{ current_user.username }}</span>
+      <h2 style="margin:0;">Good to see you.</h2>
+    </div>
+    <form action="{{ url_for('search.search') }}" method="GET" class="search-box" style="max-width:340px;">
+      <input type="text" name="q" placeholder="Search PDFs, notes, questions...">
+      <button type="submit" class="btn btn-secondary">Search</button>
+    </form>
+  </div>
+
+  <div class="stat-strip" style="margin-top:0;">
+    <div class="stat-cell"><span class="num">{{ stats.pdfs }}</span><span class="label">PDFs Uploaded</span></div>
+    <div class="stat-cell"><span class="num">{{ stats.notes }}</span><span class="label">Notes</span></div>
+    <div class="stat-cell"><span class="num">{{ stats.questions }}</span><span class="label">Questions</span></div>
+    <div class="stat-cell"><span class="num">{{ stats.subjects }}</span><span class="label">Subjects</span></div>
+  </div>
+
+  <div class="card-grid" style="margin-top:28px;">
+    <a href="{{ url_for('pdfs.upload') }}" class="card"><h3>Upload a PDF</h3><p>Add notes or reference material to the library.</p></a>
+    <a href="{{ url_for('notes.new') }}" class="card ore"><h3>Write a note</h3><p>Publish quick revision notes for a subject.</p></a>
+    <a href="{{ url_for('questions.new') }}" class="card"><h3>Add a question</h3><p>Contribute to the shared question bank.</p></a>
+    <a href="{{ url_for('ai.assistant') }}" class="card ore"><h3>Ask the AI Assistant</h3><p>Explanations, MCQs, and exam answers on demand.</p></a>
+  </div>
+
+  <div class="section-head" style="margin-top:36px;"><h3 style="margin:0;">Recent uploads</h3></div>
+  <div class="card">
+    {% if recent_pdfs %}
+      {% for pdf in recent_pdfs %}
+        <div class="item-row">
+          <div>
+            <div class="item-title"><a href="{{ url_for('pdfs.view', pdf_id=pdf.id) }}">{{ pdf.title }}</a></div>
+            <div class="item-meta">{{ pdf.subject_ref.name if pdf.subject_ref else 'Uncategorised' }}{% if pdf.semester %} &middot; Semester {{ pdf.semester }}{% endif %}</div>
+          </div>
+          <span class="tag mono">PDF</span>
+        </div>
+      {% endfor %}
+    {% else %}
+      <p class="form-hint">No PDFs uploaded yet.</p>
+    {% endif %}
+  </div>
+
+  <div class="section-head" style="margin-top:28px;"><h3 style="margin:0;">Popular notes</h3></div>
+  <div class="card">
+    {% if recent_notes %}
+      {% for note in recent_notes %}
+        <div class="item-row">
+          <div>
+            <div class="item-title"><a href="{{ url_for('notes.view', note_id=note.id) }}">{{ note.title }}</a></div>
+            <div class="item-meta">{{ note.subject_ref.name if note.subject_ref else 'Uncategorised' }}</div>
+          </div>
+          <span class="tag mono">NOTE</span>
+        </div>
+      {% endfor %}
+    {% else %}
+      <p class="form-hint">No notes yet.</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

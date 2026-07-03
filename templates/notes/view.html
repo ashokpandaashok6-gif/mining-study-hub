@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}{{ note.title }} — Mining Study Hub{% endblock %}
+{% block content %}
+<div class="narrow section">
+  <span class="eyebrow">{{ note.subject_ref.name if note.subject_ref else 'General' }}</span>
+  <div class="section-head">
+    <h2 style="margin:0;">{{ note.title }}</h2>
+    {% if current_user.is_authenticated and (current_user.id == note.created_by or current_user.is_admin) %}
+      <form action="{{ url_for('notes.delete', note_id=note.id) }}" method="POST" onsubmit="return confirm('Delete this note?');">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+      </form>
+    {% endif %}
+  </div>
+  <div class="card" style="white-space:pre-wrap;">{{ note.content }}</div>
+  <p class="item-meta" style="margin-top:12px;">Published {{ note.created_at.strftime('%d %b %Y') }}{% if note.author %} by {{ note.author.username }}{% endif %}</p>
+</div>
+{% endblock %}

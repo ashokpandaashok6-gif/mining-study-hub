@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Log in — Mining Study Hub{% endblock %}
+{% block content %}
+<div class="narrow section">
+  <div class="form-card">
+    <h2>Log in</h2>
+    <form method="POST">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <div class="field">
+        <label for="identifier">Username or email</label>
+        <input type="text" id="identifier" name="identifier" required autofocus>
+      </div>
+      <div class="field">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" required>
+      </div>
+      <button type="submit" class="btn btn-primary btn-block">Log in</button>
+    </form>
+    <p class="form-hint" style="margin-top:16px;">No account yet? <a href="{{ url_for('auth.register') }}">Register here</a>.</p>
+  </div>
+</div>
+{% endblock %}

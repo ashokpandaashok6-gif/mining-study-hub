@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}{{ pdf.title }} — Mining Study Hub{% endblock %}
+{% block content %}
+<div class="section shell">
+  <div class="section-head">
+    <div>
+      <span class="eyebrow">{{ pdf.subject_ref.name if pdf.subject_ref else 'Uncategorised' }}{% if pdf.semester %} &middot; Semester {{ pdf.semester }}{% endif %}</span>
+      <h2 style="margin:0;">{{ pdf.title }}</h2>
+    </div>
+    <div style="display:flex; gap:8px;">
+      <a href="{{ url_for('pdfs.serve_file', pdf_id=pdf.id) }}" target="_blank" class="btn btn-secondary">Open in new tab</a>
+      <a href="{{ url_for('pdfs.download', pdf_id=pdf.id) }}" class="btn btn-primary">Download</a>
+      {% if current_user.is_authenticated and (current_user.id == pdf.uploaded_by or current_user.is_admin) %}
+        <form action="{{ url_for('pdfs.delete', pdf_id=pdf.id) }}" method="POST" onsubmit="return confirm('Delete this PDF?');">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button type="submit" class="btn btn-danger">Delete</button>
+        </form>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="card" style="padding:0; overflow:hidden;">
+    <iframe src="{{ url_for('pdfs.serve_file', pdf_id=pdf.id) }}" style="width:100%; height:80vh; border:none;"></iframe>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}Search — Mining Study Hub{% endblock %}
+{% block content %}
+<div class="section shell">
+  <h2>Search</h2>
+  <form method="GET" class="search-box" style="max-width:520px; margin-bottom:28px;">
+    <input type="text" name="q" value="{{ term }}" placeholder="e.g. Roof Bolt" autofocus>
+    <button type="submit" class="btn btn-primary">Search</button>
+  </form>
+
+  {% if term %}
+    <p class="item-meta">{{ total }} result{{ 's' if total != 1 else '' }} for "{{ term }}"</p>
+
+    {% if results.pdfs %}
+      <h3 style="margin-top:24px;">PDFs</h3>
+      <div class="card">
+        {% for pdf in results.pdfs %}
+          <div class="item-row">
+            <div class="item-title"><a href="{{ url_for('pdfs.view', pdf_id=pdf.id) }}">{{ pdf.title }}</a></div>
+            <span class="tag mono">PDF</span>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    {% if results.notes %}
+      <h3 style="margin-top:24px;">Notes</h3>
+      <div class="card">
+        {% for note in results.notes %}
+          <div class="item-row">
+            <div class="item-title"><a href="{{ url_for('notes.view', note_id=note.id) }}">{{ note.title }}</a></div>
+            <span class="tag mono">NOTE</span>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    {% if results.questions %}
+      <h3 style="margin-top:24px;">Questions</h3>
+      <div class="card">
+        {% for q in results.questions %}
+          <div class="item-row">
+            <div class="item-title">{{ q.question }}</div>
+            <span class="tag mono">Q&amp;A</span>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    {% if total == 0 %}
+      <div class="empty-state">No results for "{{ term }}". Try a different term.</div>
+    {% endif %}
+  {% else %}
+    <div class="empty-state">Search across PDFs, notes, and the question bank at once.</div>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,9 @@
+venv/
+__pycache__/
+*.pyc
+.env
+database.db
+uploads/pdfs/*
+!uploads/pdfs/.gitkeep
+uploads/images/*
+!uploads/images/.gitkeep

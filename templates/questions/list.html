@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Question Bank — Mining Study Hub{% endblock %}
+{% block content %}
+<div class="section shell">
+  <div class="section-head">
+    <h2>Question Bank</h2>
+    {% if current_user.is_authenticated %}<a href="{{ url_for('questions.new') }}" class="btn btn-primary">Add question</a>{% endif %}
+  </div>
+
+  <form method="GET" class="filter-bar">
+    <select name="subject" onchange="this.form.submit()">
+      <option value="">All subjects</option>
+      {% for s in subjects %}
+        <option value="{{ s.id }}" {% if selected_subject == s.id %}selected{% endif %}>{{ s.name }}</option>
+      {% endfor %}
+    </select>
+  </form>
+
+  {% if questions %}
+    {% for q in questions %}
+      <div class="card" style="margin-bottom:14px;">
+        <div class="item-row" style="border:none; padding-top:0;">
+          <span class="tag mono">{{ q.subject_ref.name if q.subject_ref else 'General' }}</span>
+          {% if q.marks %}<span class="tag">{{ q.marks }} marks</span>{% endif %}
+        </div>
+        <p style="font-weight:600; margin:8px 0 4px;">{{ q.question }}</p>
+        {% if q.answer %}
+          <details><summary style="cursor:pointer; color:var(--seam);">Show answer</summary>
+            <p style="white-space:pre-wrap; margin-top:8px;">{{ q.answer }}</p>
+          </details>
+        {% endif %}
+        {% if current_user.is_authenticated and (current_user.id == q.created_by or current_user.is_admin) %}
+          <form action="{{ url_for('questions.delete', question_id=q.id) }}" method="POST" onsubmit="return confirm('Delete this question?');" style="margin-top:10px;">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+          </form>
+        {% endif %}
+      </div>
+    {% endfor %}
+  {% else %}
+    <div class="empty-state">No questions yet. <a href="{{ url_for('questions.new') if current_user.is_authenticated else url_for('auth.login') }}">Add the first one</a>.</div>
+  {% endif %}
+</div>
+{% endblock %}

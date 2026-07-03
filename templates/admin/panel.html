@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block title %}Admin Panel — Mining Study Hub{% endblock %}
+{% block content %}
+<div class="section shell">
+  <div class="section-head">
+    <h2>Admin Panel</h2>
+    <div style="display:flex; gap:8px;">
+      <a href="{{ url_for('admin.subjects') }}" class="btn btn-secondary">Manage Subjects</a>
+      <a href="{{ url_for('admin.users') }}" class="btn btn-secondary">Manage Users</a>
+    </div>
+  </div>
+
+  <div class="stat-strip" style="margin-top:0;">
+    <div class="stat-cell"><span class="num">{{ stats.users }}</span><span class="label">Users</span></div>
+    <div class="stat-cell"><span class="num">{{ stats.pdfs }}</span><span class="label">PDFs</span></div>
+    <div class="stat-cell"><span class="num">{{ stats.notes }}</span><span class="label">Notes</span></div>
+    <div class="stat-cell"><span class="num">{{ stats.questions }}</span><span class="label">Questions</span></div>
+    <div class="stat-cell"><span class="num">{{ stats.subjects }}</span><span class="label">Subjects</span></div>
+  </div>
+
+  <h3 style="margin-top:32px;">Pending PDFs {% if stats.pending_pdfs %}<span class="tag badge-pending">{{ stats.pending_pdfs }}</span>{% endif %}</h3>
+  <div class="card">
+    {% for pdf in pending_pdfs %}
+      <div class="item-row">
+        <div class="item-title">{{ pdf.title }}</div>
+        <div style="display:flex; gap:8px;">
+          <form action="{{ url_for('admin.approve', kind='pdf', item_id=pdf.id) }}" method="POST"><button class="btn btn-primary btn-sm">Approve</button></form>
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <form action="{{ url_for('admin.reject', kind='pdf', item_id=pdf.id) }}" method="POST"><button class="btn btn-danger btn-sm">Reject</button></form>
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        </div>
+      </div>
+    {% else %}<p class="form-hint">Nothing pending.</p>{% endfor %}
+  </div>
+
+  <h3 style="margin-top:24px;">Pending Notes {% if stats.pending_notes %}<span class="tag badge-pending">{{ stats.pending_notes }}</span>{% endif %}</h3>
+  <div class="card">
+    {% for note in pending_notes %}
+      <div class="item-row">
+        <div class="item-title">{{ note.title }}</div>
+        <div style="display:flex; gap:8px;">
+          <form action="{{ url_for('admin.approve', kind='note', item_id=note.id) }}" method="POST"><button class="btn btn-primary btn-sm">Approve</button></form>
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <form action="{{ url_for('admin.reject', kind='note', item_id=note.id) }}" method="POST"><button class="btn btn-danger btn-sm">Reject</button></form>
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        </div>
+      </div>
+    {% else %}<p class="form-hint">Nothing pending.</p>{% endfor %}
+  </div>
+
+  <h3 style="margin-top:24px;">Pending Questions {% if stats.pending_questions %}<span class="tag badge-pending">{{ stats.pending_questions }}</span>{% endif %}</h3>
+  <div class="card">
+    {% for q in pending_questions %}
+      <div class="item-row">
+        <div class="item-title">{{ q.question }}</div>
+        <div style="display:flex; gap:8px;">
+          <form action="{{ url_for('admin.approve', kind='question', item_id=q.id) }}" method="POST"><button class="btn btn-primary btn-sm">Approve</button></form>
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <form action="{{ url_for('admin.reject', kind='question', item_id=q.id) }}" method="POST"><button class="btn btn-danger btn-sm">Reject</button></form>
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        </div>
+      </div>
+    {% else %}<p class="form-hint">Nothing pending.</p>{% endfor %}
+  </div>
+</div>
+{% endblock %}

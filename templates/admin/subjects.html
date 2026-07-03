@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Manage Subjects — Mining Study Hub{% endblock %}
+{% block content %}
+<div class="narrow section">
+  <div class="section-head"><h2>Manage Subjects</h2><a href="{{ url_for('admin.panel') }}" class="btn btn-secondary btn-sm">&larr; Back to admin</a></div>
+
+  <form method="POST" class="search-box" style="margin-bottom:24px;">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input type="text" name="name" placeholder="New subject name" required>
+    <button type="submit" class="btn btn-primary">Add</button>
+  </form>
+
+  <div class="card">
+    {% for s in subjects %}
+      <div class="item-row">
+        <div class="item-title">{{ s.name }}</div>
+        <form action="{{ url_for('admin.delete_subject', subject_id=s.id) }}" method="POST" onsubmit="return confirm('Delete this subject? PDFs/notes/questions under it will become uncategorised.');">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button type="submit" class="btn btn-danger btn-sm">Remove</button>
+        </form>
+      </div>
+    {% else %}<p class="form-hint">No subjects yet.</p>{% endfor %}
+  </div>
+</div>
+{% endblock %}

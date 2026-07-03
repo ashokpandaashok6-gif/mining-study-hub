@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Manage Users — Mining Study Hub{% endblock %}
+{% block content %}
+<div class="narrow section">
+  <div class="section-head"><h2>Manage Users</h2><a href="{{ url_for('admin.panel') }}" class="btn btn-secondary btn-sm">&larr; Back to admin</a></div>
+
+  <div class="card">
+    {% for u in users %}
+      <div class="item-row">
+        <div>
+          <div class="item-title">{{ u.username }} {% if u.is_admin %}<span class="tag mono">ADMIN</span>{% endif %}</div>
+          <div class="item-meta">{{ u.email }} &middot; joined {{ u.created_at.strftime('%d %b %Y') }}</div>
+        </div>
+        <form action="{{ url_for('admin.toggle_admin', user_id=u.id) }}" method="POST">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button type="submit" class="btn btn-secondary btn-sm">{{ 'Remove admin' if u.is_admin else 'Make admin' }}</button>
+        </form>
+      </div>
+    {% else %}<p class="form-hint">No users yet.</p>{% endfor %}
+  </div>
+</div>
+{% endblock %}

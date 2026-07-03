@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}Mining Study Hub — Home{% endblock %}
+{% block content %}
+<div class="hero">
+  <div class="shell">
+    <span class="eyebrow">Seam by seam, exam by exam</span>
+    <h1>Everything a mining diploma student needs, in one hub.</h1>
+    <p class="lead">PDFs, notes, and a growing question bank for Mine Survey, Ventilation, Machinery, and more — plus an AI assistant that writes exam-ready answers on demand.</p>
+    <div style="display:flex; gap:12px; flex-wrap:wrap;">
+      {% if current_user.is_authenticated %}
+        <a href="{{ url_for('main.dashboard') }}" class="btn btn-primary">Go to Dashboard</a>
+      {% else %}
+        <a href="{{ url_for('auth.register') }}" class="btn btn-primary">Create free account</a>
+      {% endif %}
+      <a href="{{ url_for('search.search') }}" class="btn btn-secondary" style="background:transparent; color:#F3EEE4; border-color:#5A5248;">Search the library</a>
+    </div>
+  </div>
+</div>
+
+<div class="shell">
+  <div class="stat-strip">
+    <div class="stat-cell"><span class="num">{{ stats.pdfs }}</span><span class="label">PDFs</span></div>
+    <div class="stat-cell"><span class="num">{{ stats.notes }}</span><span class="label">Notes</span></div>
+    <div class="stat-cell"><span class="num">{{ stats.questions }}</span><span class="label">Questions</span></div>
+    <div class="stat-cell"><span class="num">{{ stats.subjects }}</span><span class="label">Subjects</span></div>
+  </div>
+</div>
+
+<div class="section shell">
+  <div class="section-head"><h2>What's inside</h2></div>
+  <div class="card-grid">
+    <div class="card">
+      <h3>PDF Library</h3>
+      <p>Upload, view in-browser, and download notes and reference material by subject and semester.</p>
+      <a href="{{ url_for('pdfs.list_pdfs') }}">Browse PDFs &rarr;</a>
+    </div>
+    <div class="card ore">
+      <h3>Question Bank</h3>
+      <p>Previous-year and practice questions tagged by subject and mark value.</p>
+      <a href="{{ url_for('questions.list_questions') }}">Browse questions &rarr;</a>
+    </div>
+    <div class="card">
+      <h3>Notes</h3>
+      <p>Concise, student-written notes for quick revision before exams.</p>
+      <a href="{{ url_for('notes.list_notes') }}">Browse notes &rarr;</a>
+    </div>
+    <div class="card ore">
+      <h3>AI Assistant</h3>
+      <p>Ask for explanations, N-mark answers, MCQs, or viva questions on any mining topic.</p>
+      {% if current_user.is_authenticated %}
+        <a href="{{ url_for('ai.assistant') }}">Open assistant &rarr;</a>
+      {% else %}
+        <a href="{{ url_for('auth.login') }}">Log in to use &rarr;</a>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}
