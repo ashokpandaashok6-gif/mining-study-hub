@@ -1,3 +1,4 @@
+
 Flask==3.0.3
 Flask-Login==0.6.3
 Flask-SQLAlchemy==3.1.1
@@ -7,4 +8,9 @@ python-dotenv==1.0.1
 Werkzeug==3.0.3
 requests==2.32.3
 gunicorn==23.0.0
+<<<<<<< HEAD
 groqpsycopg[binary]
+=======
+groq
+psycopg[binary]
+>>>>>>> a630aa1f892975e4c40eac5a61c2a5a0914e5ec6
