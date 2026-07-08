@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}{{ question.title }} — Mining Study Hub{% endblock %}
+{% block content %}
+<div class="section shell">
+  <div class="section-head">
+    <div>
+      <span class="eyebrow">{{ question.subject_ref.name if question.subject_ref else 'Uncategorised' }}{% if question.semester %} &middot; Semester {{ question.semester }}{% endif %}</span>
+      <h2 style="margin:0;">{{ question.title }}</h2>
+    </div>
+    <div style="display:flex; gap:8px;">
+      <a href="{{ question.cloudinary_url }}" target="_blank" rel="noopener" class="btn btn-secondary">Open in new tab</a>
+      <a href="{{ question.cloudinary_url }}" class="btn btn-primary">Download</a>
+      {% if current_user.is_authenticated and (current_user.id == question.uploaded_by or current_user.is_admin) %}
+        <form action="{{ url_for('questions.delete', question_id=question.id) }}" method="POST" onsubmit="return confirm('Delete this PDF?');">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button type="submit" class="btn btn-danger">Delete</button>
+        </form>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="card" style="padding:0; overflow:hidden;">
+    <iframe src="{{ question.cloudinary_url }}" style="width:100%; height:80vh; border:none;"></iframe>
+  </div>
+</div>
+{% endblock %}

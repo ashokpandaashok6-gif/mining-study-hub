@@ -13,11 +13,9 @@ def search():
     if term:
         like = f"%{term}%"
         results["pdfs"] = PDF.query.filter(PDF.title.ilike(like), PDF.approved == True).all()
-        results["notes"] = Note.query.filter(
-            (Note.title.ilike(like)) | (Note.content.ilike(like)), Note.approved == True
-        ).all()
+        results["notes"] = Note.query.filter(Note.title.ilike(like), Note.approved == True).all()
         results["questions"] = Question.query.filter(
-            (Question.question.ilike(like)) | (Question.answer.ilike(like)),
+            Question.title.ilike(like),
             Question.approved == True,
         ).all()
 

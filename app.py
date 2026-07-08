@@ -2,10 +2,11 @@ import os
 import cloudinary
 from flask import Flask
 from flask_login import LoginManager
+from sqlalchemy import inspect, text
 
 from config import Config
 from extensions import db, login_manager, csrf
-from models import User, Subject
+from models import User, Subject, PDF, Note, Question
 
 DEFAULT_SUBJECTS = [
     "Mine Survey",
@@ -24,6 +25,23 @@ DEFAULT_SUBJECTS = [
     "Underground Coal Mines",
     "Mine Mechanics",
 ]
+
+
+def ensure_schema_columns(app):
+    with app.app_context():
+        inspector = inspect(db.engine)
+        for model in (PDF, Note, Question):
+            table_name = model.__tablename__
+            existing_columns = {column["name"] for column in inspector.get_columns(table_name)}
+            for column in model.__table__.columns:
+                if column.name in existing_columns:
+                    continue
+                try:
+                    column_type = column.type.compile(dialect=db.engine.dialect)
+                    db.session.execute(text(f'ALTER TABLE {table_name} ADD COLUMN {column.name} {column_type}'))
+                except Exception as exc:
+                    app.logger.warning("Could not add column %s to %s: %s", column.name, table_name, exc)
+        db.session.commit()
 
 
 def create_app():
@@ -69,6 +87,7 @@ def create_app():
 
     with app.app_context():
         db.create_all()
+        ensure_schema_columns(app)
         if Subject.query.count() == 0:
             for name in DEFAULT_SUBJECTS:
                 db.session.add(Subject(name=name))

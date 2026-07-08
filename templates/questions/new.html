@@ -1,18 +1,14 @@
 {% extends "base.html" %}
-{% block title %}Add Question — Mining Study Hub{% endblock %}
+{% block title %}Upload Question Bank PDF — Mining Study Hub{% endblock %}
 {% block content %}
 <div class="narrow section">
   <div class="form-card">
-    <h2>Add a question</h2>
-    <form method="POST">
-        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <h2>Upload Question Bank PDF</h2>
+    <form method="POST" enctype="multipart/form-data">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
       <div class="field">
-        <label for="question">Question</label>
-        <textarea id="question" name="question" required placeholder="e.g. Explain Roof Bolting."></textarea>
-      </div>
-      <div class="field">
-        <label for="answer">Answer (optional)</label>
-        <textarea id="answer" name="answer" placeholder="Model answer..."></textarea>
+        <label for="title">Title</label>
+        <input type="text" id="title" name="title" required placeholder="e.g. Mine Survey Question Bank">
       </div>
       <div class="field">
         <label for="subject_id">Subject</label>
@@ -22,10 +18,14 @@
         </select>
       </div>
       <div class="field">
-        <label for="marks">Marks</label>
-        <input type="number" id="marks" name="marks" min="1" max="20">
+        <label for="semester">Semester</label>
+        <input type="number" id="semester" name="semester" min="1" max="8" placeholder="e.g. 4">
       </div>
-      <button type="submit" class="btn btn-primary btn-block">Add question</button>
+      <div class="field">
+        <label for="file">PDF file</label>
+        <input type="file" id="file" name="file" accept="application/pdf" required>
+      </div>
+      <button type="submit" class="btn btn-primary btn-block">Upload PDF</button>
     </form>
   </div>
 </div>

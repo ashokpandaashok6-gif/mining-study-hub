@@ -1,14 +1,14 @@
 {% extends "base.html" %}
-{% block title %}Write a Note — Mining Study Hub{% endblock %}
+{% block title %}Upload Notes PDF — Mining Study Hub{% endblock %}
 {% block content %}
 <div class="narrow section">
   <div class="form-card">
-    <h2>Write a note</h2>
-    <form method="POST">
-        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <h2>Upload Notes PDF</h2>
+    <form method="POST" enctype="multipart/form-data">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
       <div class="field">
         <label for="title">Title</label>
-        <input type="text" id="title" name="title" required placeholder="e.g. Roof Bolting">
+        <input type="text" id="title" name="title" required placeholder="e.g. Roof Bolting Notes">
       </div>
       <div class="field">
         <label for="subject_id">Subject</label>
@@ -18,10 +18,14 @@
         </select>
       </div>
       <div class="field">
-        <label for="content">Content</label>
-        <textarea id="content" name="content" required placeholder="Write your note here..."></textarea>
+        <label for="semester">Semester</label>
+        <input type="number" id="semester" name="semester" min="1" max="8" placeholder="e.g. 4">
       </div>
-      <button type="submit" class="btn btn-primary btn-block">Publish note</button>
+      <div class="field">
+        <label for="file">PDF file</label>
+        <input type="file" id="file" name="file" accept="application/pdf" required>
+      </div>
+      <button type="submit" class="btn btn-primary btn-block">Upload PDF</button>
     </form>
   </div>
 </div>

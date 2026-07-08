@@ -51,7 +51,7 @@
       <div class="card">
         {% for q in results.questions %}
           <div class="item-row">
-            <div class="item-title">{{ q.question }}</div>
+            <div class="item-title"><a href="{{ url_for('questions.view', question_id=q.id) }}">{{ q.title }}</a></div>
             <span class="tag mono">Q&amp;A</span>
           </div>
         {% endfor %}

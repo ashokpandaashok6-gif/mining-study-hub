@@ -27,7 +27,7 @@ def dashboard():
         "subjects": Subject.query.count(),
     }
     recent_pdfs = PDF.query.order_by(PDF.uploaded_at.desc()).limit(5).all()
-    recent_notes = Note.query.order_by(Note.created_at.desc()).limit(5).all()
+    recent_notes = Note.query.order_by(Note.uploaded_at.desc()).limit(5).all()
     return render_template(
         "dashboard.html", stats=stats, recent_pdfs=recent_pdfs, recent_notes=recent_notes
     )

@@ -52,7 +52,7 @@
   <div class="card">
     {% for q in pending_questions %}
       <div class="item-row">
-        <div class="item-title">{{ q.question }}</div>
+        <div class="item-title">{{ q.title }}</div>
         <div style="display:flex; gap:8px;">
           <form action="{{ url_for('admin.approve', kind='question', item_id=q.id) }}" method="POST"><button class="btn btn-primary btn-sm">Approve</button></form>
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
