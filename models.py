@@ -44,7 +44,8 @@ class PDF(db.Model):
     title = db.Column(db.String(255), nullable=False)
     subject_id = db.Column(db.Integer, db.ForeignKey("subjects.id"), nullable=True)
     semester = db.Column(db.Integer, nullable=True)
-    filename = db.Column(db.String(255), nullable=False)
+    cloudinary_url = db.Column(db.String(500), nullable=False)
+    public_id = db.Column(db.String(255), nullable=False)
     uploaded_by = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=True)
     approved = db.Column(db.Boolean, default=True)
     uploaded_at = db.Column(db.DateTime, default=datetime.utcnow)
@@ -55,24 +56,27 @@ class Note(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(255), nullable=False)
-    content = db.Column(db.Text, nullable=False)
     subject_id = db.Column(db.Integer, db.ForeignKey("subjects.id"), nullable=True)
-    created_by = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=True)
+    semester = db.Column(db.Integer, nullable=True)
+    cloudinary_url = db.Column(db.String(500), nullable=False)
+    public_id = db.Column(db.String(255), nullable=False)
+    uploaded_by = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=True)
     approved = db.Column(db.Boolean, default=True)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    uploaded_at = db.Column(db.DateTime, default=datetime.utcnow)
 
 
 class Question(db.Model):
     __tablename__ = "questions"
 
     id = db.Column(db.Integer, primary_key=True)
-    question = db.Column(db.Text, nullable=False)
-    answer = db.Column(db.Text, nullable=True)
+    title = db.Column(db.String(255), nullable=False)
     subject_id = db.Column(db.Integer, db.ForeignKey("subjects.id"), nullable=True)
-    marks = db.Column(db.Integer, nullable=True)
-    created_by = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=True)
+    semester = db.Column(db.Integer, nullable=True)
+    cloudinary_url = db.Column(db.String(500), nullable=False)
+    public_id = db.Column(db.String(255), nullable=False)
+    uploaded_by = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=True)
     approved = db.Column(db.Boolean, default=True)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    uploaded_at = db.Column(db.DateTime, default=datetime.utcnow)
 
 
 class Bookmark(db.Model):
