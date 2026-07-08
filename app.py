@@ -6,7 +6,7 @@ from sqlalchemy import inspect, text
 
 from config import Config
 from extensions import db, login_manager, csrf
-from models import User, Subject, PDF, Note, Question
+from models import Bookmark, User, Subject, PDF, Note, Question
 
 DEFAULT_SUBJECTS = [
     "Mine Survey",
@@ -30,7 +30,7 @@ DEFAULT_SUBJECTS = [
 def ensure_schema_columns(app):
     with app.app_context():
         inspector = inspect(db.engine)
-        for model in (PDF, Note, Question):
+        for model in (User, PDF, Note, Question):
             table_name = model.__tablename__
             existing_columns = {column["name"] for column in inspector.get_columns(table_name)}
             for column in model.__table__.columns:
