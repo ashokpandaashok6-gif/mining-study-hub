@@ -23,6 +23,13 @@ class Config:
     CLOUDINARY_API_SECRET = os.environ.get("CLOUDINARY_API_SECRET", "")
     CLOUDINARY_FOLDER = os.environ.get("CLOUDINARY_FOLDER", "mining-study-hub/pdfs")
 
+    MAIL_SERVER = os.environ.get("MAIL_SERVER", "")
+    MAIL_PORT = int(os.environ.get("MAIL_PORT", "587"))
+    MAIL_USERNAME = os.environ.get("MAIL_USERNAME", "")
+    MAIL_PASSWORD = os.environ.get("MAIL_PASSWORD", "")
+    MAIL_USE_TLS = os.environ.get("MAIL_USE_TLS", "true").lower() in {"1", "true", "yes", "on"}
+    MAIL_DEFAULT_SENDER = os.environ.get("MAIL_DEFAULT_SENDER", "")
+
     # AI Assistant provider — "anthropic", "groq", or "gemini"
     AI_PROVIDER = os.environ.get("AI_PROVIDER", "anthropic")
     AI_API_KEY = os.environ.get("AI_API_KEY", "")
