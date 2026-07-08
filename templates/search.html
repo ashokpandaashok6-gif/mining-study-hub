@@ -3,10 +3,21 @@
 {% block content %}
 <div class="section shell">
   <h2>Search</h2>
-  <form method="GET" class="search-box" style="max-width:520px; margin-bottom:28px;">
+  <form method="GET" class="search-box" style="max-width:520px; margin-bottom:20px;">
     <input type="text" name="q" value="{{ term }}" placeholder="e.g. Roof Bolt" autofocus>
     <button type="submit" class="btn btn-primary">Search</button>
   </form>
+
+  {% if subjects %}
+    <div style="margin-bottom:24px;">
+      <strong>Browse by subject</strong>
+      <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:8px;">
+        {% for subject in subjects %}
+          <a href="{{ url_for('pdfs.list_pdfs', subject=subject.id) }}" class="tag mono">{{ subject.name }}</a>
+        {% endfor %}
+      </div>
+    </div>
+  {% endif %}
 
   {% if term %}
     <p class="item-meta">{{ total }} result{{ 's' if total != 1 else '' }} for "{{ term }}"</p>

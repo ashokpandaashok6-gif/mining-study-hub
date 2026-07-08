@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request
 
-from models import PDF, Note, Question
+from models import PDF, Note, Question, Subject
 
 bp = Blueprint("search", __name__)
 
@@ -21,5 +21,6 @@ def search():
             Question.approved == True,
         ).all()
 
+    subjects = Subject.query.order_by(Subject.name).all()
     total = len(results["pdfs"]) + len(results["notes"]) + len(results["questions"])
-    return render_template("search.html", term=term, results=results, total=total)
+    return render_template("search.html", term=term, results=results, total=total, subjects=subjects)

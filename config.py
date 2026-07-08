@@ -18,6 +18,11 @@ class Config:
     MAX_CONTENT_LENGTH = int(os.environ.get("MAX_UPLOAD_MB", 20)) * 1024 * 1024
     ALLOWED_PDF_EXTENSIONS = {"pdf"}
 
+    CLOUDINARY_CLOUD_NAME = os.environ.get("CLOUDINARY_CLOUD_NAME", "")
+    CLOUDINARY_API_KEY = os.environ.get("CLOUDINARY_API_KEY", "")
+    CLOUDINARY_API_SECRET = os.environ.get("CLOUDINARY_API_SECRET", "")
+    CLOUDINARY_FOLDER = os.environ.get("CLOUDINARY_FOLDER", "mining-study-hub/pdfs")
+
     # AI Assistant provider — "anthropic", "groq", or "gemini"
     AI_PROVIDER = os.environ.get("AI_PROVIDER", "anthropic")
     AI_API_KEY = os.environ.get("AI_API_KEY", "")

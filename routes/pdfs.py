@@ -1,5 +1,7 @@
+import io
 import os
 import uuid
+import cloudinary.uploader
 from flask import (
     Blueprint, render_template, request, redirect, url_for, flash,
     send_from_directory, current_app, abort
@@ -18,6 +20,40 @@ def allowed_pdf(filename):
         "." in filename
         and filename.rsplit(".", 1)[1].lower() in current_app.config["ALLOWED_PDF_EXTENSIONS"]
     )
+
+
+def is_remote_storage_reference(value):
+    return isinstance(value, str) and value.startswith(("http://", "https://"))
+
+
+def store_pdf_file(file_storage, unique_name):
+    file_path = os.path.join(current_app.config["PDF_UPLOAD_FOLDER"], unique_name)
+
+    if (
+        current_app.config.get("CLOUDINARY_CLOUD_NAME")
+        and current_app.config.get("CLOUDINARY_API_KEY")
+        and current_app.config.get("CLOUDINARY_API_SECRET")
+    ):
+        try:
+            file_storage.stream.seek(0)
+            file_bytes = file_storage.read()
+            upload_result = cloudinary.uploader.upload(
+                io.BytesIO(file_bytes),
+                resource_type="raw",
+                folder=current_app.config.get("CLOUDINARY_FOLDER", "mining-study-hub/pdfs"),
+                public_id=unique_name,
+                overwrite=True,
+            )
+            return upload_result.get("secure_url"), None
+        except Exception as exc:
+            current_app.logger.exception("Cloudinary PDF upload failed")
+            file_storage.stream.seek(0)
+            file_storage.save(file_path)
+            return unique_name, f"Cloudinary upload failed, so the file was saved locally instead ({exc})"
+
+    file_storage.stream.seek(0)
+    file_storage.save(file_path)
+    return unique_name, None
 
 
 @bp.route("/")
@@ -49,13 +85,16 @@ def upload():
         else:
             safe_name = secure_filename(file.filename)
             unique_name = f"{uuid.uuid4().hex}_{safe_name}"
-            file.save(os.path.join(current_app.config["PDF_UPLOAD_FOLDER"], unique_name))
+            stored_name, warning_message = store_pdf_file(file, unique_name)
+
+            if warning_message:
+                flash(warning_message, "warning")
 
             pdf = PDF(
                 title=title,
                 subject_id=subject_id,
                 semester=semester,
-                filename=unique_name,
+                filename=stored_name,
                 uploaded_by=current_user.id,
             )
             db.session.add(pdf)
@@ -75,12 +114,16 @@ def view(pdf_id):
 @bp.route("/<int:pdf_id>/file")
 def serve_file(pdf_id):
     pdf = PDF.query.get_or_404(pdf_id)
+    if is_remote_storage_reference(pdf.filename):
+        return redirect(pdf.filename)
     return send_from_directory(current_app.config["PDF_UPLOAD_FOLDER"], pdf.filename)
 
 
 @bp.route("/<int:pdf_id>/download")
 def download(pdf_id):
     pdf = PDF.query.get_or_404(pdf_id)
+    if is_remote_storage_reference(pdf.filename):
+        return redirect(pdf.filename)
     return send_from_directory(
         current_app.config["PDF_UPLOAD_FOLDER"], pdf.filename,
         as_attachment=True, download_name=f"{pdf.title}.pdf"
@@ -94,9 +137,10 @@ def delete(pdf_id):
     if pdf.uploaded_by != current_user.id and not current_user.is_admin:
         abort(403)
 
-    file_path = os.path.join(current_app.config["PDF_UPLOAD_FOLDER"], pdf.filename)
-    if os.path.exists(file_path):
-        os.remove(file_path)
+    if not is_remote_storage_reference(pdf.filename):
+        file_path = os.path.join(current_app.config["PDF_UPLOAD_FOLDER"], pdf.filename)
+        if os.path.exists(file_path):
+            os.remove(file_path)
 
     db.session.delete(pdf)
     db.session.commit()
