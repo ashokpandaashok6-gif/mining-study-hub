@@ -4,7 +4,7 @@ from werkzeug.utils import secure_filename
 
 from extensions import db
 from models import Note, Subject
-from routes.pdfs import allowed_pdf, delete_cloudinary_asset, store_pdf_file
+from routes.pdfs import allowed_pdf, delete_cloudinary_asset, save_pdf_locally, store_pdf_file
 import uuid
 
 bp = Blueprint("notes", __name__, url_prefix="/notes")
@@ -49,14 +49,18 @@ def new():
             safe_name = secure_filename(file.filename)
             unique_name = f"{uuid.uuid4().hex}_{safe_name}"
             cloudinary_url, public_id, warning_message = store_pdf_file(file, unique_name)
+            fallback_path = None
             if warning_message:
                 flash(warning_message, "warning")
+                fallback_path = save_pdf_locally(file, unique_name)
+                cloudinary_url = ""
+                public_id = ""
             note = Note(
                 title=title,
                 subject_id=subject_id,
                 semester=semester,
-                cloudinary_url=cloudinary_url or unique_name,
-                public_id=public_id or unique_name,
+                cloudinary_url=cloudinary_url or f"/uploads/pdfs/{fallback_path or unique_name}",
+                public_id=public_id or (fallback_path or unique_name),
                 uploaded_by=current_user.id,
             )
             db.session.add(note)

@@ -9,6 +9,9 @@ from flask import (
 from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename
 
+
+SUPPORTED_PDF_EXTENSIONS = {"pdf"}
+
 from extensions import db
 from models import PDF, Subject
 
@@ -18,7 +21,7 @@ bp = Blueprint("pdfs", __name__, url_prefix="/pdfs")
 def allowed_pdf(filename):
     return (
         "." in filename
-        and filename.rsplit(".", 1)[1].lower() in current_app.config["ALLOWED_PDF_EXTENSIONS"]
+        and filename.rsplit(".", 1)[1].lower() in current_app.config.get("ALLOWED_PDF_EXTENSIONS", SUPPORTED_PDF_EXTENSIONS)
     )
 
 
@@ -52,6 +55,13 @@ def store_pdf_file(file_storage, unique_name):
             return "", "", f"Cloudinary upload failed: {exc}"
 
     return "", "", "Cloudinary is not configured for file uploads."
+
+
+def save_pdf_locally(file_storage, unique_name):
+    file_path = os.path.join(current_app.config["PDF_UPLOAD_FOLDER"], unique_name)
+    file_storage.stream.seek(0)
+    file_storage.save(file_path)
+    return unique_name
 
 
 def delete_cloudinary_asset(public_id):
@@ -108,16 +118,20 @@ def upload():
             safe_name = secure_filename(file.filename)
             unique_name = f"{uuid.uuid4().hex}_{safe_name}"
             cloudinary_url, public_id, warning_message = store_pdf_file(file, unique_name)
+            fallback_path = None
 
             if warning_message:
                 flash(warning_message, "warning")
+                fallback_path = save_pdf_locally(file, unique_name)
+                cloudinary_url = ""
+                public_id = ""
 
             pdf = PDF(
                 title=title,
                 subject_id=subject_id,
                 semester=semester,
-                cloudinary_url=cloudinary_url or unique_name,
-                public_id=public_id or unique_name,
+                cloudinary_url=cloudinary_url or f"/uploads/pdfs/{fallback_path or unique_name}",
+                public_id=public_id or (fallback_path or unique_name),
                 uploaded_by=current_user.id,
             )
             db.session.add(pdf)
