@@ -46,6 +46,7 @@ class PDF(db.Model):
     title = db.Column(db.String(255), nullable=False)
     subject_id = db.Column(db.Integer, db.ForeignKey("subjects.id"), nullable=True)
     semester = db.Column(db.Integer, nullable=True)
+    filename = db.Column(db.String(255), nullable=False)
     cloudinary_url = db.Column(db.String(500), nullable=False)
     public_id = db.Column(db.String(255), nullable=False)
     uploaded_by = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=True)

@@ -1,6 +1,7 @@
 import io
 import os
 import uuid
+import cloudinary
 import cloudinary.uploader
 from flask import (
     Blueprint, render_template, request, redirect, url_for, flash,
@@ -11,6 +12,23 @@ from werkzeug.utils import secure_filename
 
 
 SUPPORTED_PDF_EXTENSIONS = {"pdf"}
+
+def configure_cloudinary():
+    cloud_name = current_app.config.get("CLOUDINARY_CLOUD_NAME")
+    api_key = current_app.config.get("CLOUDINARY_API_KEY")
+    api_secret = current_app.config.get("CLOUDINARY_API_SECRET")
+    if cloud_name and api_key and api_secret:
+        cloudinary.config(
+            cloud_name=cloud_name,
+            api_key=api_key,
+            api_secret=api_secret,
+            secure=True,
+        )
+        return True
+    if current_app.config.get("CLOUDINARY_URL"):
+        cloudinary.config(cloud_name=current_app.config["CLOUDINARY_URL"])
+        return True
+    return False
 
 from extensions import db
 from models import PDF, Subject
@@ -34,27 +52,25 @@ def get_storage_url(item):
 
 
 def store_pdf_file(file_storage, unique_name):
-    if (
-        current_app.config.get("CLOUDINARY_CLOUD_NAME")
-        and current_app.config.get("CLOUDINARY_API_KEY")
-        and current_app.config.get("CLOUDINARY_API_SECRET")
-    ):
+    if configure_cloudinary():
         try:
             file_storage.stream.seek(0)
             file_bytes = file_storage.read()
             upload_result = cloudinary.uploader.upload(
                 io.BytesIO(file_bytes),
                 resource_type="raw",
-                folder=current_app.config.get("CLOUDINARY_FOLDER", "mining-study-hub/pdfs"),
-                public_id=unique_name,
-                overwrite=True,
+                folder="mining-study-hub/pdfs",
+                use_filename=True,
+                unique_filename=True,
+                overwrite=False,
+                access_mode="public",
             )
             return upload_result.get("secure_url"), upload_result.get("public_id"), None
         except Exception as exc:
             current_app.logger.exception("Cloudinary PDF upload failed")
             return "", "", f"Cloudinary upload failed: {exc}"
 
-    return "", "", "Cloudinary is not configured for file uploads."
+    return "", "", "Cloudinary is not configured for file uploads. Set CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY and CLOUDINARY_API_SECRET." 
 
 
 def save_pdf_locally(file_storage, unique_name):
@@ -115,8 +131,9 @@ def upload():
         elif not allowed_pdf(file.filename):
             flash("Only PDF files are allowed.", "error")
         else:
-            safe_name = secure_filename(file.filename)
+            safe_name = secure_filename(file.filename or "")
             unique_name = f"{uuid.uuid4().hex}_{safe_name}"
+            original_filename = safe_name
             cloudinary_url, public_id, warning_message = store_pdf_file(file, unique_name)
             fallback_path = None
 
@@ -130,6 +147,7 @@ def upload():
                 title=title,
                 subject_id=subject_id,
                 semester=semester,
+                filename=original_filename,
                 cloudinary_url=cloudinary_url or f"/uploads/pdfs/{fallback_path or unique_name}",
                 public_id=public_id or (fallback_path or unique_name),
                 uploaded_by=current_user.id,
