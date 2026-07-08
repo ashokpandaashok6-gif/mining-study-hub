@@ -35,8 +35,8 @@
             </div>
           </div>
           <div style="display:flex; gap:8px;">
-            <a href="{{ url_for('notes.view', note_id=note.id) }}" class="btn btn-secondary btn-sm">Open</a>
-            <a href="{{ note.cloudinary_url }}" class="btn btn-secondary btn-sm" target="_blank" rel="noopener">Download</a>
+            <a href="{{ note.cloudinary_url }}" target="_blank" rel="noopener" class="btn btn-secondary btn-sm">Open</a>
+            <a href="{{ note.cloudinary_url }}" download class="btn btn-secondary btn-sm">Download</a>
           </div>
         </div>
       {% endfor %}

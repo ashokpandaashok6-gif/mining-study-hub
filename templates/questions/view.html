@@ -9,7 +9,7 @@
     </div>
     <div style="display:flex; gap:8px;">
       <a href="{{ question.cloudinary_url }}" target="_blank" rel="noopener" class="btn btn-secondary">Open in new tab</a>
-      <a href="{{ question.cloudinary_url }}" class="btn btn-primary">Download</a>
+      <a href="{{ question.cloudinary_url }}" download class="btn btn-primary">Download</a>
       {% if current_user.is_authenticated and (current_user.id == question.uploaded_by or current_user.is_admin) %}
         <form action="{{ url_for('questions.delete', question_id=question.id) }}" method="POST" onsubmit="return confirm('Delete this PDF?');">
           <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
